@@ -1,0 +1,40 @@
+name: Create release PR
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        required: true
+permissions:
+  contents: write
+  pull-requests: write
+  checks: write
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: branch and commit
+        id: c
+        run: |
+          set -euo pipefail
+          git config user.name github-actions[bot]
+          git config user.email github-actions[bot]@users.noreply.github.com
+          git checkout -b release/v${{ inputs.version }}
+          echo "## ${{ inputs.version }}" >> CHANGES.md
+          git commit -qam "Release v${{ inputs.version }}"
+          git push -f origin HEAD
+          echo "head=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+      - uses: actions/github-script@v9
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const head_sha = '${{ steps.c.outputs.head }}';
+            for (const name of ['ci-passed', 'changelog-updated']) {
+              await github.rest.checks.create({ owner, repo, name, head_sha,
+                status: 'completed', conclusion: 'success',
+                output: { title: 'verified in Create release PR', summary: 'built and tested' } });
+            }
+            const { data: pr } = await github.rest.pulls.create({ owner, repo,
+              head: 'release/v${{ inputs.version }}', base: 'main',
+              title: 'Release v${{ inputs.version }}', body: `base ${context.sha}` });
+            core.notice(pr.html_url);

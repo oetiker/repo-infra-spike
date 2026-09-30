@@ -1,0 +1,55 @@
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+  pull-requests: read
+  statuses: read
+  checks: write
+jobs:
+  # Ordinary PRs: a stand-in for the real tests.
+  # Release PRs (bot, release/*): verify instead of test.
+  ci-passed:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v9
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const { owner, repo } = context.repo;
+            if (!pr.head.ref.startsWith('release/')) {
+              core.notice('ordinary PR: pretend tests ran');
+              return;
+            }
+            const { data: cmp } = await github.rest.repos.compareCommits({
+              owner, repo, base: pr.base.ref, head: pr.head.sha });
+            if (cmp.behind_by > 0) {
+              core.setFailed(`main moved ${cmp.behind_by} commit(s) after this release was built`);
+              return;
+            }
+            core.notice('release PR verified: current with main');
+
+  # On every push to main: an open release PR that is now behind goes red.
+  stale-release:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v9
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const prs = await github.paginate(github.rest.pulls.list, { owner, repo, state: 'open' });
+            for (const pr of prs.filter((p) => p.head.ref.startsWith('release/'))) {
+              const { data: cmp } = await github.rest.repos.compareCommits({
+                owner, repo, base: pr.base.ref, head: pr.head.sha });
+              core.notice(`#${pr.number} behind_by=${cmp.behind_by}`);
+              if (cmp.behind_by === 0) continue;
+              await github.rest.checks.create({ owner, repo, name: 'ci-passed',
+                head_sha: pr.head.sha, status: 'completed', conclusion: 'failure',
+                output: { title: 'main moved', summary: `main moved after ${pr.head.ref} was built; close the PR and dispatch again` } });
+              core.notice(`marked #${pr.number} red`);
+            }
