@@ -35,7 +35,7 @@ jobs:
 
   # On every push to main: an open release PR that is now behind goes red.
   stale-release:
-    if: github.event_name == 'push'
+    if: false
     runs-on: ubuntu-latest
     steps:
       - uses: actions/github-script@v9
