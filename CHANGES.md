@@ -3,4 +3,15 @@ pull request adds its entry as a file in `CHANGES.d/new/`,
 `CHANGES.d/changed/` or `CHANGES.d/fixed/`. The release pull request moves
 the entries into this file.
 
+## 0.2.0 - 2026-11-26
+
+### New
+
+- feature.txt greets the reader with a second line.
+
+### Fixed
+
+- other.txt no longer holds a stray character.
+  Its single line now reads "fixed".
+
 ## 0.1.0 - 2026-09-30
