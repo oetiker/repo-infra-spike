@@ -48,7 +48,7 @@ permissions:
 
 jobs:
   prepare:
-    uses: oposs/repo-infra/.github/workflows/ri-release-prepare.yml@feat/changelog-fragments
+    uses: oposs/repo-infra/.github/workflows/ri-release-prepare.yml@v2
     permissions:
       contents: write
       pull-requests: read
@@ -91,7 +91,7 @@ jobs:
 
   finish:
     needs: [prepare, build, test]
-    uses: oposs/repo-infra/.github/workflows/ri-release-finish.yml@feat/changelog-fragments
+    uses: oposs/repo-infra/.github/workflows/ri-release-finish.yml@v2
     permissions:
       contents: write
       pull-requests: write

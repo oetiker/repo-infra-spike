@@ -25,7 +25,7 @@ jobs:
     if: >-
       startsWith(github.head_ref, 'release/') ||
       !contains(github.event.pull_request.labels.*.name, 'no-changelog')
-    uses: oposs/repo-infra/.github/workflows/ri-changelog.yml@feat/changelog-fragments
+    uses: oposs/repo-infra/.github/workflows/ri-changelog.yml@v2
     permissions:
       contents: read
       pull-requests: read
