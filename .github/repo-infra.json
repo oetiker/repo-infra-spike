@@ -1,0 +1,11 @@
+{
+  "moving_major_tag": false,
+  "version_files": [
+    {
+      "path": "VERSION",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "replacement": "$VERSION",
+      "verify": "^$VERSION$"
+    }
+  ]
+}
