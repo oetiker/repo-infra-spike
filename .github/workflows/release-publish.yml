@@ -20,7 +20,7 @@ permissions:
 
 jobs:
   publish:
-    uses: oposs/repo-infra/.github/workflows/ri-publish-tag.yml@feat/changelog-fragments
+    uses: oposs/repo-infra/.github/workflows/ri-publish-tag.yml@v2
     permissions:
       contents: write
       pull-requests: read
@@ -29,7 +29,7 @@ jobs:
   finalize:
     needs: [publish]
     if: needs.publish.outputs.release_id != ''
-    uses: oposs/repo-infra/.github/workflows/ri-publish-finalize.yml@feat/changelog-fragments
+    uses: oposs/repo-infra/.github/workflows/ri-publish-finalize.yml@v2
     permissions:
       contents: write
       actions: write

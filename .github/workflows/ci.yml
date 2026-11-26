@@ -21,7 +21,7 @@ permissions:
 jobs:
   release-pr-current:
     if: ${{ !(github.event_name == 'pull_request' && startsWith(github.head_ref, 'release/') && github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.user.login == 'github-actions[bot]') }}
-    uses: oposs/repo-infra/.github/workflows/ri-release-pr-current.yml@feat/changelog-fragments
+    uses: oposs/repo-infra/.github/workflows/ri-release-pr-current.yml@v2
     permissions:
       contents: read
       pull-requests: read
@@ -33,7 +33,7 @@ jobs:
   # carries no D31 skip: on the release pull request Create release PR opened,
   # this verdict is what ci-passed decides on.
   release-verdict:
-    uses: oposs/repo-infra/.github/workflows/ri-release-verdict.yml@feat/changelog-fragments
+    uses: oposs/repo-infra/.github/workflows/ri-release-verdict.yml@v2
     permissions:
       contents: read
       pull-requests: read
